@@ -3,18 +3,18 @@
 
 class V2 {
 public:
-	float x;
-	float y;
-	V2(float X = 0, float Y = 0);
+	double x;
+	double y;
+	V2(double X = 0, double Y = 0);
 
 	static V2 Normalized(V2 u);
-	static float Dot(V2 u, V2 v);
-	static float Distance(V2 u, V2 v);
+	static double Dot(V2 u, V2 v);
+	static double Distance(V2 u, V2 v);
 	V2 operator+(V2 v);
 	V2 operator-(V2 v);
-	V2 operator*(float scalar);
-	V2 operator/(float scalar);
+	V2 operator*(double scalar);
+	V2 operator/(double scalar);
 
 	void Normalize();
-	float Length();
+	double Length();
 };

@@ -12,7 +12,7 @@
 #define WIDTH 1200
 #define HEIGHT 800
 #define TITLE "Mass-Spring-Damper Pendulum"
-#define FPS 120
+#define FPS 480
 #define PIXELS_PER_UNIT 10
 
 #define UNIT_HEIGHT HEIGHT/PIXELS_PER_UNIT
