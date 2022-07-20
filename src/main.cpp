@@ -85,8 +85,8 @@ void CollisionResponse(Node* first, Node* second) {
     //Dynamic Response
     V2 normal = V2::Normalized((second->position - first->position));
     float impulse = V2::Dot((first->velocity - second->velocity), normal) * (GUIe + 1) * (first->mass * second->mass) / (first->mass + second->mass);
-    first->force = first->force - normal * impulse;
-    second->force = second->force + normal * impulse;
+    first->velocity = first->velocity - (normal * impulse) / first->mass;
+    second->velocity = second->velocity + (normal * impulse) / second->mass;
 }
 
 void CheckForCollisionsInVector(std::vector<Node*>& vector) {
@@ -105,11 +105,11 @@ void ApplyGravity(Node* node) {
     node->force = node->force + (gravity * node->mass);
 }
 
+//TO DO: Kinetic enegrgy increases with each bounce (and over time?)
 void ApplyKinematics(Node* node) {
-    node->velocity = node->velocity + (node->force / node->mass);
-    std::cout << node->velocity.y << std::endl;
+    node->position = node->position + (node->velocity * DELTA_T) + (node->force / node->mass) * pow(DELTA_T, 2) * 0.5f;
+    node->velocity = node->velocity + (node->force / node->mass) * DELTA_T;
     node->force = { 0, 0 };
-    node->position = node->position + (node->velocity * (float)DELTA_T);
 }
 
 //------Drawing------//
@@ -148,12 +148,14 @@ int main()
     MakeCollidable(first);
     allNodes.push_back(first);
 
+
     InitWindow(WIDTH, HEIGHT, TITLE);
     SetTargetFPS(FPS);
 
     while (!WindowShouldClose()) {
         if (!isPaused) {
             CheckForCollisionsInVector(collidables);
+            LOG_DEBUG(first->position.y * 9.81f + pow(first->velocity.Length(), 2) / 2.f);
             for (Node* node : allNodes) {
                 CheckForBoundaryCollision(node);
                 ApplyGravity(node);
