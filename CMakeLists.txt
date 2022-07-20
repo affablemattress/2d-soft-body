@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 3.8)
 
 project ("mass-spring-damper-pendulum")
 
-add_executable (mass-spring-damper-pendulum "src/main.cpp" )
+add_executable (mass-spring-damper-pendulum "src/main.cpp" "src/LOG.hpp" "src/V2.cpp" "src/V2.hpp" "src/Node.cpp" "src/Node.hpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET mass-spring-damper-pendulum PROPERTY CXX_STANDARD 20)
