@@ -1,6 +1,4 @@
-﻿//TO DO: Add Drag
-
-#define LOG_LEVEL_DEBUG
+﻿#define LOG_LEVEL_DEBUG
 #include "LOG.hpp"
 #include "V2.hpp"
 #include "Node.hpp"
@@ -14,7 +12,7 @@
 #define WIDTH 1200
 #define HEIGHT 800
 #define TITLE "Mass-Spring-Damper Pendulum"
-#define FPS 960
+#define FPS 120
 #define PIXELS_PER_UNIT 10
 
 #define UNIT_HEIGHT HEIGHT/PIXELS_PER_UNIT
@@ -28,6 +26,7 @@ std::vector<Node*> allNodes;
 std::vector<Node*> collidables;
 bool isPaused = false;
 double GUIe = 1;
+double GUIDragCoefficient = 0.1;
 
 std::string GUIeText = "";
 
@@ -121,19 +120,19 @@ void CheckForCollisionsInVector(std::vector<Node*>& vector) {
 
 //-----Kinematics----//
 
+void ApplyDrag(Node* node) {
+    node->force = node->force + (-node->velocity * pow(node->radius, 2) * GUIDragCoefficient);
+}
+
 void ApplyGravity(Node* node) {
-    if (!node->isFixed) {
-        node->force = node->force + (gravity * node->mass);
-    }
+    node->force = node->force + (gravity * node->mass);
 }
 
 //TO DO: Kinetic enegrgy increases with each bounce (and over time?)
 void ApplyKinematics(Node* node) {
-    if (!node->isFixed) {
-        node->position = node->position + (node->velocity * DELTA_T) + (node->force / node->mass) * pow(DELTA_T, 2) * 0.5f;
-        node->velocity = node->velocity + (node->force / node->mass) * DELTA_T;
-        node->force = { 0, 0 };
-    }
+    node->position = node->position + (node->velocity * DELTA_T) + (node->force / node->mass) * pow(DELTA_T, 2) * 0.5f;
+    node->velocity = node->velocity + (node->force / node->mass) * DELTA_T;
+    node->force = { 0, 0 };
 }
 
 //------Drawing------//
@@ -194,10 +193,14 @@ int main()
                 CheckForBoundaryCollision(node);
             }
             for (Node* node : allNodes) {
-                ApplyGravity(node);
-                ApplyKinematics(node);
+                if (!node->isFixed) {
+                    ApplyDrag(node);
+                    ApplyGravity(node);
+                    ApplyKinematics(node);
+                }
             }
-            LOG_DEBUG((pow(first->velocity.Length(), 2) * 0.5) + first->position.y * 9.81);
+            LOG_DEBUG(0.5 * pow(first->velocity.Length(), 2) + first->position.y * 9.81);
+            LOG_INFO(first->velocity.Length());
         }
 
         BeginDrawing();
