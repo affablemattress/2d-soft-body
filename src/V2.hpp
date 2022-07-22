@@ -12,6 +12,7 @@ public:
 	static double Distance(V2 u, V2 v);
 	V2 operator+(V2 v);
 	V2 operator-(V2 v);
+	V2 operator-();
 	V2 operator*(double scalar);
 	V2 operator/(double scalar);
 

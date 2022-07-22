@@ -1,4 +1,6 @@
-﻿#define LOG_LEVEL_DEBUG
+﻿//TO DO: Add Drag
+
+#define LOG_LEVEL_DEBUG
 #include "LOG.hpp"
 #include "V2.hpp"
 #include "Node.hpp"
@@ -12,7 +14,7 @@
 #define WIDTH 1200
 #define HEIGHT 800
 #define TITLE "Mass-Spring-Damper Pendulum"
-#define FPS 480
+#define FPS 960
 #define PIXELS_PER_UNIT 10
 
 #define UNIT_HEIGHT HEIGHT/PIXELS_PER_UNIT
@@ -20,18 +22,18 @@
 #define DELTA_T 1/FPS
 
 V2 gravity = { 0, -9.81 };
-const float kBorderThickness = 3;
+const double kBorderThickness = 3;
 
 std::vector<Node*> allNodes;
 std::vector<Node*> collidables;
 bool isPaused = false;
-float GUIe = 1;
+double GUIe = 1;
 
 std::string GUIeText = "";
 
 void MakeCollidable(Node* node) {
-    if (node->collidable == false) {
-        node->collidable = true;
+    if (node->isCollidable == false) {
+        node->isCollidable = true;
         collidables.push_back(node);
         return;
     }
@@ -39,8 +41,8 @@ void MakeCollidable(Node* node) {
 }
 
 void MakeUnCollidable(Node* node) {
-    if (node->collidable == true) {
-        node->collidable = false;
+    if (node->isCollidable == true) {
+        node->isCollidable = false;
         for (int i = 0; i < collidables.size(); i++) {
             if (node->ID == collidables.at(i)->ID) {
                 collidables.erase(collidables.begin() + i);
@@ -55,38 +57,56 @@ void MakeUnCollidable(Node* node) {
 //-----Collisions-----//
 
 void CheckForBoundaryCollision(Node* node) {
-    if (node->position.x < -(UNIT_WIDTH / 2) + (kBorderThickness / PIXELS_PER_UNIT) + node->radius) {
-        node->position.x = -(UNIT_WIDTH / 2) + (kBorderThickness / PIXELS_PER_UNIT) + node->radius;
-        node->velocity.x = -node->velocity.x;
-    }
-    else if (node->position.x > (UNIT_WIDTH / 2) - (kBorderThickness / PIXELS_PER_UNIT) - node->radius) {
-        node->position.x = (UNIT_WIDTH / 2) - (kBorderThickness / PIXELS_PER_UNIT) - node->radius;
-        node->velocity.x = -node->velocity.x;
-    }
-    if (node->position.y < -(UNIT_HEIGHT / 2) + (kBorderThickness / PIXELS_PER_UNIT) + node->radius) {
-        node->position.y = -(UNIT_HEIGHT / 2) + (kBorderThickness / PIXELS_PER_UNIT) + node->radius;
-        node->velocity.y = -node->velocity.y;
-    }
-    else if (node->position.y > (UNIT_HEIGHT / 2) - (kBorderThickness / PIXELS_PER_UNIT) - node->radius) {
-        node->position.y = (UNIT_HEIGHT / 2) - (kBorderThickness / PIXELS_PER_UNIT) - node->radius;
-        node->velocity.y = -node->velocity.y;
+    if (!node->isFixed) {
+        if (node->position.x < -(UNIT_WIDTH / 2) + (kBorderThickness / PIXELS_PER_UNIT) + node->radius) {
+            node->position.x = -(UNIT_WIDTH / 2) + (kBorderThickness / PIXELS_PER_UNIT) + node->radius;
+            node->velocity.x = -node->velocity.x * GUIe;
+        }
+        else if (node->position.x > (UNIT_WIDTH / 2) - (kBorderThickness / PIXELS_PER_UNIT) - node->radius) {
+            node->position.x = (UNIT_WIDTH / 2) - (kBorderThickness / PIXELS_PER_UNIT) - node->radius;
+            node->velocity.x = -node->velocity.x * GUIe;
+        }
+        if (node->position.y < -(UNIT_HEIGHT / 2) + (kBorderThickness / PIXELS_PER_UNIT) + node->radius) {
+            node->position.y = -(UNIT_HEIGHT / 2) + (kBorderThickness / PIXELS_PER_UNIT) + node->radius;
+            node->velocity.y = -node->velocity.y * GUIe;
+        }
+        else if (node->position.y > (UNIT_HEIGHT / 2) - (kBorderThickness / PIXELS_PER_UNIT) - node->radius) {
+            node->position.y = (UNIT_HEIGHT / 2) - (kBorderThickness / PIXELS_PER_UNIT) - node->radius;
+            node->velocity.y = -node->velocity.y * GUIe;
+        }
     }
 }
 
 bool CheckForCollision(Node* first, Node* second) {
-    return (pow(second->position.x - first->position.x, 2) + pow(second->position.y - first->position.y, 2) <= pow(first->radius + second->radius, 2));
+    return (pow(second->position.x - first->position.x, 2) + pow(second->position.y - first->position.y, 2) < pow(first->radius + second->radius, 2));
 }
 
 void CollisionResponse(Node* first, Node* second) {
-    //Displace/Static Response
-    float deltaX = first->radius + second->radius - V2::Distance(first->position, second->position);
-    first->position = first->position - (V2::Normalized(second->position - first->position) * (deltaX / 2.f));
-    second->position = second->position - (V2::Normalized(first->position - second->position) * (deltaX / 2.f));
-    //Dynamic Response
-    V2 normal = V2::Normalized((second->position - first->position));
-    float impulse = V2::Dot((first->velocity - second->velocity), normal) * (GUIe + 1) * (first->mass * second->mass) / (first->mass + second->mass);
-    first->velocity = first->velocity - (normal * impulse) / first->mass;
-    second->velocity = second->velocity + (normal * impulse) / second->mass;
+    if (!first->isFixed && !second->isFixed) {
+        //Dynamic Response
+        V2 normal = V2::Normalized((second->position - first->position));
+        float impulse = abs(V2::Dot((first->velocity - second->velocity), normal) * (GUIe + 1) * (first->mass * second->mass) / (first->mass + second->mass));
+        first->velocity = first->velocity - (normal * impulse) / first->mass;
+        second->velocity = second->velocity + (normal * impulse) / second->mass;
+        //Displace/Static Response
+        float deltaX = first->radius + second->radius - V2::Distance(first->position, second->position);
+        first->position = first->position - normal * (deltaX / 2.f);
+        second->position = second->position + normal * (deltaX / 2.f);
+    }
+    else if (first->isFixed && !second->isFixed) {
+        V2 normal = V2::Normalized((second->position - first->position));
+        float impulse = abs(V2::Dot((second->velocity), normal) * (GUIe + 1) * second->mass);
+        second->velocity = second->velocity + (normal * impulse) / second->mass;
+        float deltaX = first->radius + second->radius - V2::Distance(first->position, second->position);
+        second->position = second->position + normal * deltaX;
+    }
+    else if (!first->isFixed && second->isFixed) {
+        V2 normal = V2::Normalized((second->position - first->position));
+        float impulse = abs(V2::Dot((first->velocity), normal) * (GUIe + 1) * first->mass);
+        first->velocity = first->velocity - (normal * impulse) / first->mass;
+        float deltaX = first->radius + second->radius - V2::Distance(first->position, second->position);
+        first->position = first->position - normal * deltaX;
+    }
 }
 
 void CheckForCollisionsInVector(std::vector<Node*>& vector) {
@@ -102,14 +122,18 @@ void CheckForCollisionsInVector(std::vector<Node*>& vector) {
 //-----Kinematics----//
 
 void ApplyGravity(Node* node) {
-    node->force = node->force + (gravity * node->mass);
+    if (!node->isFixed) {
+        node->force = node->force + (gravity * node->mass);
+    }
 }
 
 //TO DO: Kinetic enegrgy increases with each bounce (and over time?)
 void ApplyKinematics(Node* node) {
-    node->position = node->position + (node->velocity * DELTA_T) + (node->force / node->mass) * pow(DELTA_T, 2) * 0.5f;
-    node->velocity = node->velocity + (node->force / node->mass) * DELTA_T;
-    node->force = { 0, 0 };
+    if (!node->isFixed) {
+        node->position = node->position + (node->velocity * DELTA_T) + (node->force / node->mass) * pow(DELTA_T, 2) * 0.5f;
+        node->velocity = node->velocity + (node->force / node->mass) * DELTA_T;
+        node->force = { 0, 0 };
+    }
 }
 
 //------Drawing------//
@@ -144,10 +168,21 @@ void DrawGUIForeground() {
 
 int main()
 {
-    Node* first = new Node(RED, 1, 1, { 12,12 }, { 5, -3 });
+    Node* first = new Node(RED, 1, 1, { 12, 12 }, { 5, -3 });
     MakeCollidable(first);
     allNodes.push_back(first);
 
+    Node* second = new Node(GREEN, 5, { -22, -12 });
+    MakeCollidable(second);
+    allNodes.push_back(second);
+
+    Node* third = new Node(GREEN, 3, { -15, 17 });
+    MakeCollidable(third);
+    allNodes.push_back(third);
+
+    Node* fourth = new Node(GREEN, 8, { 0, -25 });
+    MakeCollidable(fourth);
+    allNodes.push_back(fourth);
 
     InitWindow(WIDTH, HEIGHT, TITLE);
     SetTargetFPS(FPS);
@@ -155,23 +190,23 @@ int main()
     while (!WindowShouldClose()) {
         if (!isPaused) {
             CheckForCollisionsInVector(collidables);
-            LOG_DEBUG(first->position.y * 9.81f + pow(first->velocity.Length(), 2) / 2.f);
-            for (Node* node : allNodes) {
+            for (Node* node : collidables) {
                 CheckForBoundaryCollision(node);
+            }
+            for (Node* node : allNodes) {
                 ApplyGravity(node);
                 ApplyKinematics(node);
             }
+            LOG_DEBUG((pow(first->velocity.Length(), 2) * 0.5) + first->position.y * 9.81);
         }
 
         BeginDrawing();
-        
         DrawGUIBackground();
         for (Node* node : allNodes) {
             DrawNode(node);
         }
         DrawBorders();
         DrawGUIForeground();
-
         ClearBackground(RAYWHITE);
         EndDrawing();
     }

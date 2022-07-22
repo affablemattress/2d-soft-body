@@ -26,6 +26,10 @@ V2 V2::operator-(V2 v) {
 	return V2(x - v.x, y - v.y);
 }
 
+V2 V2::operator-() {
+	return V2(-x, -y);
+}
+
 V2 V2::operator*(double scalar) {
 	return V2(x * scalar, y * scalar);
 }
