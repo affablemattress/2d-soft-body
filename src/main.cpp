@@ -2,6 +2,7 @@
 #include "LOG.hpp"
 #include "V2.hpp"
 #include "Node.hpp"
+#include "Spring.hpp"
 
 #define RAYGUI_IMPLEMENTATION
 #include "../include/raylib.h"
@@ -12,18 +13,19 @@
 #define WIDTH 1200
 #define HEIGHT 800
 #define TITLE "Mass-Spring-Damper Pendulum"
-#define FPS 120
+#define FPS 1920
 #define PIXELS_PER_UNIT 10
 
 #define UNIT_HEIGHT HEIGHT/PIXELS_PER_UNIT
 #define UNIT_WIDTH WIDTH/PIXELS_PER_UNIT
-#define DELTA_T 1/FPS
+#define DELTA_T 1 / 1920
 
 V2 gravity = { 0, -9.81 };
 const double kBorderThickness = 3;
 
 std::vector<Node*> allNodes;
 std::vector<Node*> collidables;
+std::vector<Spring*> springs;
 bool isPaused = false;
 double GUIe = 1;
 double GUIDragCoefficient = 0.1;
@@ -128,7 +130,6 @@ void ApplyGravity(Node* node) {
     node->force = node->force + (gravity * node->mass);
 }
 
-//TO DO: Kinetic enegrgy increases with each bounce (and over time?)
 void ApplyKinematics(Node* node) {
     node->position = node->position + (node->velocity * DELTA_T) + (node->force / node->mass) * pow(DELTA_T, 2) * 0.5f;
     node->velocity = node->velocity + (node->force / node->mass) * DELTA_T;
@@ -167,44 +168,51 @@ void DrawGUIForeground() {
 
 int main()
 {
-    Node* first = new Node(RED, 1, 1, { 12, 12 }, { 5, -3 });
+    Node* first = new Node(RED, 1, 1, { 0, 20 }, { 0, 0 });
+    first->isFixed = true;
     MakeCollidable(first);
     allNodes.push_back(first);
-
-    Node* second = new Node(GREEN, 5, { -22, -12 });
+    Node* second = new Node(GREEN, 1, 1, { 10, 20 }, { 0, 0 });
     MakeCollidable(second);
     allNodes.push_back(second);
-
-    Node* third = new Node(GREEN, 3, { -15, 17 });
+    Node* third = new Node(BLUE, 1, 1, { 20, 20 }, { 0, 0 });
     MakeCollidable(third);
     allNodes.push_back(third);
 
-    Node* fourth = new Node(GREEN, 8, { 0, -25 });
-    MakeCollidable(fourth);
-    allNodes.push_back(fourth);
+    Spring* firstSpring = new Spring(first, second, 10, 5, 0);
+    springs.push_back(firstSpring);
+    Spring* secondSpring = new Spring(second, third, 10, 5, 0);
+    springs.push_back(secondSpring);
 
     InitWindow(WIDTH, HEIGHT, TITLE);
     SetTargetFPS(FPS);
 
+    bool switchie = true;
+    double lastPos = 0;
+    double pos = 0;
+    int step = 0;
     while (!WindowShouldClose()) {
         if (!isPaused) {
             CheckForCollisionsInVector(collidables);
+            for (Spring* spring : springs) {
+                spring->ApplySpring();
+                spring->ApplyDamper();
+            }
             for (Node* node : collidables) {
                 CheckForBoundaryCollision(node);
             }
             for (Node* node : allNodes) {
                 if (!node->isFixed) {
-                    ApplyDrag(node);
+                    //ApplyDrag(node);
                     ApplyGravity(node);
                     ApplyKinematics(node);
                 }
             }
-            LOG_DEBUG(0.5 * pow(first->velocity.Length(), 2) + first->position.y * 9.81);
-            LOG_INFO(first->velocity.Length());
         }
 
         BeginDrawing();
         DrawGUIBackground();
+
         for (Node* node : allNodes) {
             DrawNode(node);
         }
