@@ -9,7 +9,7 @@ void Spring::ApplySpring() {
 
 void Spring::ApplyDamper() {
 	V2 deltaX = (second->position - first->position);
-	V2 deltaVAlongDeltaX = V2::Normalized(deltaX) * V2::Dot(second->velocity - first->velocity, deltaX);
+	V2 deltaVAlongDeltaX = V2::Normalized(deltaX) * V2::Dot(deltaX, second->velocity - first->velocity);
 	first->force = first->force + deltaVAlongDeltaX * dampingCoefficient;
 	second->force = second->force - deltaVAlongDeltaX * dampingCoefficient;
 }

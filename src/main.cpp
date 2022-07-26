@@ -14,11 +14,11 @@
 #define HEIGHT 800
 #define TITLE "Mass-Spring-Damper Pendulum"
 #define FPS 1920
-#define PIXELS_PER_UNIT 10
+#define PIXELS_PER_UNIT 5
 
-#define UNIT_HEIGHT HEIGHT/PIXELS_PER_UNIT
+#define UNIT_HEIGHT HEIGHT/PIXELS_PER_UNIT 
 #define UNIT_WIDTH WIDTH/PIXELS_PER_UNIT
-#define DELTA_T 1 / 1920
+#define DELTA_T 1 / 960
 
 V2 gravity = { 0, -9.81 };
 const double kBorderThickness = 3;
@@ -144,6 +144,14 @@ void DrawBorders() {
     DrawRectangle(0, HEIGHT - kBorderThickness, WIDTH, kBorderThickness, GRAY);
 }
 
+void DrawSpring(Spring* spring) {
+    DrawLine(WIDTH / 2 + spring->first->position.x * PIXELS_PER_UNIT, 
+             HEIGHT / 2 - spring->first->position.y * PIXELS_PER_UNIT, 
+             WIDTH / 2 + spring->second->position.x * PIXELS_PER_UNIT, 
+             HEIGHT / 2 - spring->second->position.y * PIXELS_PER_UNIT,
+             BLACK);
+}
+
 void DrawNode(Node* node) {
     DrawCircle(WIDTH / 2 + node->position.x * PIXELS_PER_UNIT, HEIGHT / 2 - node->position.y * PIXELS_PER_UNIT, node->radius * PIXELS_PER_UNIT, node->color);
     DrawCircle(WIDTH / 2 + node->position.x * PIXELS_PER_UNIT, HEIGHT / 2 - node->position.y * PIXELS_PER_UNIT, node->radius * PIXELS_PER_UNIT - PIXELS_PER_UNIT / 5, GRAY);
@@ -169,20 +177,23 @@ void DrawGUIForeground() {
 int main()
 {
     Node* first = new Node(RED, 1, 1, { 0, 20 }, { 0, 0 });
-    first->isFixed = true;
+
     MakeCollidable(first);
     allNodes.push_back(first);
-    Node* second = new Node(GREEN, 1, 1, { 10, 20 }, { 0, 0 });
+    Node* second = new Node(GREEN, 1, 1, { 10, 10 }, { 0, 0 });
     MakeCollidable(second);
     allNodes.push_back(second);
-    Node* third = new Node(BLUE, 1, 1, { 20, 20 }, { 0, 0 });
+    Node* third = new Node(BLUE, 1, 1, { 20, 10 }, { 0, 0 });
     MakeCollidable(third);
     allNodes.push_back(third);
 
-    Spring* firstSpring = new Spring(first, second, 10, 5, 0);
+    Spring* firstSpring = new Spring(first, second, 10, 200, 0.1);
     springs.push_back(firstSpring);
-    Spring* secondSpring = new Spring(second, third, 10, 5, 0);
+    Spring* secondSpring = new Spring(second, third, 10, 200, 0.1);
     springs.push_back(secondSpring);
+    Spring* thirdSpring = new Spring(first, third, 10, 200, 0.1);
+    springs.push_back(thirdSpring);
+
 
     InitWindow(WIDTH, HEIGHT, TITLE);
     SetTargetFPS(FPS);
@@ -213,6 +224,9 @@ int main()
         BeginDrawing();
         DrawGUIBackground();
 
+        for (Spring* spring : springs) {
+            DrawSpring(spring);
+        }
         for (Node* node : allNodes) {
             DrawNode(node);
         }
