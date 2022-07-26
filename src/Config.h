@@ -1,0 +1,6 @@
+#pragma once
+#define RAYGUI_IMPLEMENTATION
+#define SCREEN_WIDTH 1200
+#define SCREEN_HEIGHT 800
+#define PIXELS_PER_UNIT 5
+#define TARGET_FPS 240
