@@ -84,26 +84,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Renderer.cpp" />
-    <ClCompile Include="src\Entity.cpp" />
-    <ClCompile Include="src\Circle.cpp" />
+    <ClCompile Include="src\Component.cpp" />
+    <ClCompile Include="src\GameObject.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\V2.cpp" />
+    <ClCompile Include="src\UniqueID.cpp" />
+    <ClCompile Include="src\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\raylib.lib" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Component.h" />
     <ClInclude Include="src\Config.h" />
-    <ClInclude Include="src\Renderer.h" />
-    <ClInclude Include="src\Entity.h" />
-    <ClInclude Include="src\Circle.h" />
+    <ClInclude Include="src\GameObject.h" />
     <ClInclude Include="include\raudio.h" />
     <ClInclude Include="include\raygui.h" />
     <ClInclude Include="include\raylib.h" />
     <ClInclude Include="include\raymath.h" />
     <ClInclude Include="include\rlgl.h" />
     <ClInclude Include="src\V2.h" />
+    <ClInclude Include="src\UniqueID.h" />
+    <ClInclude Include="src\Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />

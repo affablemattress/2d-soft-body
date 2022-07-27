@@ -359,12 +359,12 @@ typedef struct Material {
     float params[4];        // Material generic parameters (if required)
 } Material;
 
-// Transform, vectex transformation data
-typedef struct Transform {
+// Transforma, vectex transformation data
+typedef struct Transforma {
     Vector3 translation;    // Translation
     Quaternion rotation;    // Rotation
     Vector3 scale;          // Scale
-} Transform;
+} Transforma;
 
 // Bone, skeletal animation bone
 typedef struct BoneInfo {
@@ -385,7 +385,7 @@ typedef struct Model {
     // Animation data
     int boneCount;          // Number of bones
     BoneInfo *bones;        // Bones information (skeleton)
-    Transform *bindPose;    // Bones base transformation (pose)
+    Transforma *bindPose;    // Bones base transformation (pose)
 } Model;
 
 // ModelAnimation
@@ -393,7 +393,7 @@ typedef struct ModelAnimation {
     int boneCount;          // Number of bones
     int frameCount;         // Number of animation frames
     BoneInfo *bones;        // Bones information (skeleton)
-    Transform **framePoses; // Poses array by frame
+    Transforma **framePoses; // Poses array by frame
 } ModelAnimation;
 
 // Ray, ray for raycasting
