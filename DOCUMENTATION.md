@@ -11,4 +11,4 @@ main function is located inside `EntryPoint.cpp`
 	- **Transform** `class Transform : public Component` : Holds the position and rotation of a GameObject. Every GameObject must have a transform component. 
 - **GameObject** `class GameObject` : Every entity in the scene is a GameObject. You can add functionality to the GameObjects by using components. All GameObjects must have a Transform component.
 * * *
-- **Application** `class Application` : Engine instantiates a application object when it starts. Then calls the `void Application::Run()` function to initialize the application.
+- **Application** `class Application` : Engine creates application instance when it starts. Then calls the `void Application::Run()` function to initialize the application.
