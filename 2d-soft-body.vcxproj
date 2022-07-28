@@ -16,6 +16,7 @@
     <ProjectGuid>{be884a43-3e59-40da-98b8-32d0c7494bcb}</ProjectGuid>
     <RootNamespace>My2dsoftbody</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>2d-soft-body-engine</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -57,7 +58,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)include\;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\; $(SolutionDir)include\;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -73,7 +74,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)include\;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\; $(SolutionDir)include\;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -84,19 +85,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Component.cpp" />
+    <ClCompile Include="src\Entry Point.cpp" />
     <ClCompile Include="src\GameObject.cpp" />
-    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\V2.cpp" />
     <ClCompile Include="src\UniqueID.cpp" />
     <ClCompile Include="src\Transform.cpp" />
+    <ClCompile Include="src\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\raylib.lib" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Component.h" />
-    <ClInclude Include="src\Config.h" />
+    <ClInclude Include="src\Application.h" />
+    <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\GameObject.h" />
     <ClInclude Include="include\raudio.h" />
     <ClInclude Include="include\raygui.h" />
@@ -106,6 +110,7 @@
     <ClInclude Include="src\V2.h" />
     <ClInclude Include="src\UniqueID.h" />
     <ClInclude Include="src\Transform.h" />
+    <ClInclude Include="src\WindowManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />

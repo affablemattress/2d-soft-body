@@ -1,10 +1,12 @@
 #pragma once
 #include <stdint.h>
 
-namespace UniqueID {
-	namespace {
-		uint32_t lastID_ = 0;
+namespace Shabby {
+	namespace UniqueID {
+		namespace {
+			uint32_t lastID_ = 0;
+		}
+		uint32_t GenerateID();
 	}
-	uint32_t GenerateID();
 }
 

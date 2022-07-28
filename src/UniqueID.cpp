@@ -1,6 +1,8 @@
 #include "UniqueID.h"
 
-uint32_t UniqueID::GenerateID() {
-	lastID_++;
-	return lastID_;
+namespace Shabby {
+	uint32_t UniqueID::GenerateID() {
+		lastID_++;
+		return lastID_;
+	}
 }

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2d-soft-body", "2d-soft-body.vcxproj", "{BE884A43-3E59-40DA-98B8-32D0C7494BCB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2d-soft-body-engine", "2d-soft-body.vcxproj", "{BE884A43-3E59-40DA-98B8-32D0C7494BCB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
