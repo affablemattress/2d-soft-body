@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-namespace Shabby {
+namespace Patchwork {
 	namespace UniqueID {
 		namespace {
 			uint32_t lastID_ = 0;

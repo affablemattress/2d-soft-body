@@ -1,8 +1,6 @@
 #pragma once
-namespace Shabby {
-	class V2 {
-		double x_;
-		double y_;
+namespace Patchwork {
+	struct V2 {
 	public:
 		static double Magnitude(const V2& u);
 		static double SqrMagnitude(const V2& u);
@@ -23,6 +21,9 @@ namespace Shabby {
 		V2();
 		V2(double x, double y);
 		~V2();
+	private:
+		double x_;
+		double y_;
 	};
 }
 

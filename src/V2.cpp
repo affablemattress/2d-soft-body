@@ -1,7 +1,7 @@
 #include "V2.h"
 
 #include <math.h>
-namespace Shabby {
+namespace Patchwork {
 	double V2::Magnitude(const V2& u) {
 		return sqrt(u.GetX() * u.GetX() + u.GetY() * u.GetY());
 	}

@@ -5,19 +5,19 @@
 
 #include <stdint.h>
 
-namespace Shabby {
+namespace Patchwork {
 	class GameObject {
-		const uint32_t kID_;
-		Transform* transform_;
 	public:
 		uint32_t GetID() const;
-
 		Transform* GetTransform() const;
+		//Sets GameObject's Transform compnent to the one passed by parameter and deletes the old one.
 		void SetTransform(Transform* component);
 		void DeleteTransform();
 
-		GameObject(const V2& position, double rotation);
 		GameObject();
 		~GameObject();
+	private: 
+		const uint32_t kID_;
+		Transform* transform_;
 	};
 }

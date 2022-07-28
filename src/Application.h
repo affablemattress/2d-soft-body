@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-namespace Shabby {
+namespace Patchwork {
 	class Application {
 	public:
 		void Run();
