@@ -31,6 +31,7 @@ double GUIe = 1;
 double GUIDragCoefficient = 0.1;
 
 std::string GUIeText = "";
+std::string GUIDragCoefficientText = "";
 
 void MakeCollidable(Node* node) {
     if (node->isCollidable == false) {
@@ -168,6 +169,9 @@ void DrawGUIForeground() {
     GUIe = GuiSlider(Rectangle{ 164 , HEIGHT - 30, 95, 15 }, "Coefficient of Restitution  ", GUIeText.c_str(), GUIe, 0, 1);
     GUIeText = std::to_string(GUIe).substr(0, 3);
 
+    GUIDragCoefficient = GuiSlider(Rectangle{ 164 , HEIGHT - 60, 95, 15 }, "Drag Coefficient  ", GUIDragCoefficientText.c_str(), GUIDragCoefficient, 0, 0.5);
+    GUIDragCoefficientText = std::to_string(GUIDragCoefficient).substr(0, 5);
+
     DrawText("Press [SPACE] to pause.", WIDTH / 2 - MeasureText("Press [SPACE] to pause.", 10) / 2, 15, 10, GRAY);
     if (IsKeyPressed(KEY_SPACE)) {
         isPaused ^= 1;
@@ -176,24 +180,46 @@ void DrawGUIForeground() {
 
 int main()
 {
-    Node* first = new Node(RED, 1, 1, { 0, 20 }, { 0, 0 });
-
+    double gridLength = 10;
+    Node* first = new Node(RED, 1, 1, { 1 * gridLength, 2 * gridLength * 0.866 }, { 0, 0 });
     MakeCollidable(first);
     allNodes.push_back(first);
-    Node* second = new Node(GREEN, 1, 1, { 10, 10 }, { 0, 0 });
+    Node* second = new Node(GREEN, 1, 1, { 0.5 * gridLength, 1 * gridLength * 0.866 }, { 0, 0 });
     MakeCollidable(second);
     allNodes.push_back(second);
-    Node* third = new Node(BLUE, 1, 1, { 20, 10 }, { 0, 0 });
+    Node* third = new Node(BLUE, 1, 1, { 1.5 * gridLength, 1 * gridLength * 0.866 }, { 0, 0 });
     MakeCollidable(third);
     allNodes.push_back(third);
+    Node* fourth = new Node(RED, 1, 1, { 0, 0 }, { 0, 0 });
+    MakeCollidable(fourth);
+    allNodes.push_back(fourth);
+    Node* fifth = new Node(GREEN, 1, 1, { 1 * gridLength, 0 }, { 0, 0 });
+    MakeCollidable(fifth);
+    allNodes.push_back(fifth);
+    Node* sixth = new Node(BLUE, 1, 1, { 2 * gridLength, 0 }, { 0, 0 });
+    MakeCollidable(sixth);
+    allNodes.push_back(sixth);
 
-    Spring* firstSpring = new Spring(first, second, 10, 200, 0.1);
-    springs.push_back(firstSpring);
-    Spring* secondSpring = new Spring(second, third, 10, 200, 0.1);
-    springs.push_back(secondSpring);
-    Spring* thirdSpring = new Spring(first, third, 10, 200, 0.1);
-    springs.push_back(thirdSpring);
 
+    double springLength = gridLength;
+    double springConstant = 400;
+    double dampingCoefficient = 0.1;
+    springs.push_back(new Spring(first, second, springLength, springConstant, dampingCoefficient));
+    springs.push_back(new Spring(first, third, springLength, springConstant, dampingCoefficient));
+    springs.push_back(new Spring(second, third, springLength, springConstant, dampingCoefficient));
+
+    springs.push_back(new Spring(second, fourth, springLength, springConstant, dampingCoefficient));
+    springs.push_back(new Spring(second, fifth, springLength, springConstant, dampingCoefficient));
+    springs.push_back(new Spring(fourth, fifth, springLength, springConstant, dampingCoefficient));
+
+    springs.push_back(new Spring(third, fifth, springLength, springConstant, dampingCoefficient));
+    springs.push_back(new Spring(third, sixth, springLength, springConstant, dampingCoefficient));
+    springs.push_back(new Spring(fifth, sixth, springLength, springConstant, dampingCoefficient));
+
+    Node* obstacle = new Node(RED, 7, 1, { 3, -10 }, { 0, 0 });
+    MakeCollidable(obstacle);
+    obstacle->isFixed = true;
+    allNodes.push_back(obstacle);
 
     InitWindow(WIDTH, HEIGHT, TITLE);
     SetTargetFPS(FPS);
@@ -214,7 +240,7 @@ int main()
             }
             for (Node* node : allNodes) {
                 if (!node->isFixed) {
-                    //ApplyDrag(node);
+                    ApplyDrag(node);
                     ApplyGravity(node);
                     ApplyKinematics(node);
                 }
